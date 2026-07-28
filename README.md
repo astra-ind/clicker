@@ -1,46 +1,27 @@
 # Remote Pet Clicker Trainer (MVP)
 
-A lightweight Progressive Web App (PWA) that allows you to remotely trigger a pet training clicker from another device. 
+A lightweight Progressive Web App (PWA) that allows you to remotely trigger a pet training clicker from another device.
 
-## Architecture
+## Static Rewrite
 
-* **Frontend**: React, TypeScript, Tailwind CSS, Zustand, Vite, and `vite-plugin-pwa`.
-* **Backend**: None! The app is fully static.
-* **Real-time Messaging**: Uses MQTT over WebSockets via a free public broker (EMQX) for zero-setup, instant messaging.
-* **Audio**: Synthesized using the Web Audio API.
-* **Vibration**: Uses the native HTML5 Vibration API (device dependent).
+This version has been completely rewritten to be a **100% pure static web application** using vanilla HTML, CSS, and modern JavaScript. It uses zero build steps, no Node.js, and no frameworks.
 
-## Setup & Running
+## Features Preserved
 
-This project is a fully static Single Page Application (SPA).
+- [x] **Controller page** - Big prominent button, online/offline status.
+- [x] **Receiver page** - Last trigger time, output mode, sound profile, volume, keep awake, test button.
+- [x] **Real-time Engine**: Built on MQTT over WebSockets for near-instant message delivery without any backend configuration.
+- [x] **Audio Synthesizer**: Generates three distinctive click profiles (Mechanical, Soft, Loud) locally via the Web Audio API without needing to load external `.mp3` files.
+- [x] **Wake Lock**: The Receiver uses the Screen Wake Lock API to prevent the device from going to sleep while active.
+- [x] **Vibration Support**: Native HTML5 Vibration API.
+- [x] **PWA Ready**: Offline caching, installable manifest, service worker.
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Deployment to GitHub Pages
 
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
+Since this app is fully static, you can deploy it directly to GitHub Pages without any build process.
 
-3. Open the provided preview link on multiple devices:
-   * **Device 1**: Select **Receiver** and keep it with your pet.
-   * **Device 2**: Select **Controller** to remotely trigger the Receiver.
-
-## Features
-
-- **Real-time Engine**: Built on MQTT over WebSockets for near-instant message delivery without any backend configuration.
-- **Audio Synthesizer**: Generates three distinctive click profiles (Mechanical, Soft, Loud) locally via the Web Audio API without needing to load external `.mp3` files.
-- **Wake Lock**: The Receiver uses the Screen Wake Lock API to prevent the device from going to sleep while active.
-- **PWA Ready**: Includes an auto-updating service worker configuration.
-
-## Deployment
-
-Since this app is fully static, you can deploy it to any static hosting provider (e.g., GitHub Pages, Vercel, Netlify, Cloudflare Pages).
-
-1. Build the production bundle:
-   ```bash
-   npm run build
-   ```
-2. Deploy the resulting `dist/` directory to your static host.
+1. Create a new repository on GitHub.
+2. Upload all the files in this directory to the root of the repository.
+3. Go to **Settings > Pages**.
+4. Select the `main` branch (or `master`) and save.
+5. Your app will be live at `https://<username>.github.io/<repository-name>/`.

@@ -1,10 +1,11 @@
-export type ClickSoundType = 'mechanical' | 'soft' | 'loud';
+// audio.js
+export const ClickSoundTypes = ['mechanical', 'soft', 'loud'];
 
-let audioCtx: AudioContext | null = null;
+let audioCtx = null;
 
 export function getAudioContext() {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
@@ -12,11 +13,10 @@ export function getAudioContext() {
   return audioCtx;
 }
 
-export function playClick(type: ClickSoundType, volume: number = 1) {
+export function playClick(type, volume = 1) {
   const ctx = getAudioContext();
   const time = ctx.currentTime;
   
-  // Create an oscillator for the click
   const osc = ctx.createOscillator();
   const gainNode = ctx.createGain();
   const masterGain = ctx.createGain();

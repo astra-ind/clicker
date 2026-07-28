@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#09090b">
+  <title>Controller - Pet Clicker MVP</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="text-center mb-8 mt-4">
+      <h1 class="text-3xl font-bold mb-2">Remote Controller</h1>
+      
+      <div id="statusIndicator" class="status-indicator status-offline">
+        <div class="status-dot"></div>
+        <span id="statusText">Connecting...</span>
+      </div>
+    </div>
+
+    <div class="big-button-container">
+      <button id="clickBtn" class="big-btn" disabled>
+        CLICK
+      </button>
+      <p class="mt-8 text-secondary text-sm text-center" style="max-width: 200px;">
+        Tap the button to instantly trigger the receiver device.
+      </p>
+    </div>
+    
+    <button onclick="window.location.href='index.html'" style="position: fixed; bottom: 1rem; right: 1rem; font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem;">
+      Change Role
+    </button>
+  </div>
+
+  <script type="module" src="controller.js"></script>
+</body>
+</html>
