@@ -35,11 +35,87 @@
       </div>
 
       <div id="soundProfileContainer">
-        <label class="text-sm font-bold text-secondary flex mb-2 mt-4">Sound Profile</label>
-        <div class="segmented-control" id="soundProfileGroup">
-          <button data-sound="mechanical" class="active">Mechanical</button>
-          <button data-sound="soft">Soft</button>
-          <button data-sound="loud">Loud</button>
+        <label class="text-sm font-bold text-secondary flex mb-3 mt-4">Sound Profile Settings</label>
+        <div class="flex flex-col gap-2" id="soundProfileOptionsList">
+          
+          <div class="sound-option-card" data-sound="classic">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">Classic Clicker</span>
+                <span class="sound-desc">Authentic metallic dual-snap click</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
+          <div class="sound-option-card" data-sound="bell">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">Bell</span>
+                <span class="sound-desc">Bright, crystal-clear ringing chime</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
+          <div class="sound-option-card" data-sound="whistle">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10h11.5a2.5 2.5 0 0 1 2.5 2.5v0a2.5 2.5 0 0 1-2.5 2.5H2zM16 10l6-6v6zM9 10V7M13 10V6"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">Trainer Whistle</span>
+                <span class="sound-desc">High-frequency pea-whistle train pitch</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
+          <div class="sound-option-card" data-sound="mechanical">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">Standard Mechanical</span>
+                <span class="sound-desc">Simulated classic spring mechanism</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
+          <div class="sound-option-card" data-sound="soft">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="22.5"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">Gentle Soft</span>
+                <span class="sound-desc">Slower wave pop for noise-sensitive pets</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
+          <div class="sound-option-card" data-sound="loud">
+            <div class="sound-info">
+              <div class="sound-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              </div>
+              <div class="sound-text-container">
+                <span class="sound-title">High Penetration</span>
+                <span class="sound-desc">Sharp metallic snap for outdoor training</span>
+              </div>
+            </div>
+            <div class="sound-indicator-dot"></div>
+          </div>
+
         </div>
       </div>
 
@@ -67,8 +143,13 @@
       </label>
     </div>
 
-    <button id="testBtn" class="btn btn-primary mt-4">
+    <button id="testBtn" class="btn btn-primary mt-4 mb-4">
       Test Output
+    </button>
+    
+    <button id="installAppBtn" class="btn mt-4 mb-4" style="display: none; justify-content: center;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Install App
     </button>
     
     <button onclick="window.location.href='index.html'" style="position: fixed; bottom: 1rem; right: 1rem; font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem;">

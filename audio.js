@@ -1,7 +1,15 @@
 // audio.js
-export const ClickSoundTypes = ['mechanical', 'soft', 'loud'];
+export const ClickSoundTypes = ['classic', 'bell', 'whistle', 'mechanical', 'soft', 'loud'];
 
 let audioCtx = null;
+const audioBuffers = {
+  classic: null,
+  bell: null,
+  whistle: null,
+  mechanical: null,
+  soft: null,
+  loud: null
+};
 
 export function getAudioContext() {
   if (!audioCtx) {
@@ -13,47 +21,40 @@ export function getAudioContext() {
   return audioCtx;
 }
 
+export async function preloadSounds() {
+  const ctx = getAudioContext();
+  
+  const loadSound = async (type) => {
+    try {
+      const response = await fetch(`assets/${type}.wav`);
+      const arrayBuffer = await response.arrayBuffer();
+      audioBuffers[type] = await ctx.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.error(`Failed to load ${type} sound:`, e);
+    }
+  };
+
+  await Promise.all(ClickSoundTypes.map(loadSound));
+}
+
 export function playClick(type, volume = 1) {
   const ctx = getAudioContext();
-  const time = ctx.currentTime;
+  const buffer = audioBuffers[type];
   
-  const osc = ctx.createOscillator();
-  const gainNode = ctx.createGain();
+  if (!buffer) {
+    console.warn(`Buffer for ${type} not loaded yet`);
+    return;
+  }
+  
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  
   const masterGain = ctx.createGain();
-  
   masterGain.gain.value = volume;
   
-  osc.connect(gainNode);
-  gainNode.connect(masterGain);
+  source.connect(masterGain);
   masterGain.connect(ctx.destination);
   
-  switch (type) {
-    case 'mechanical':
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(800, time);
-      osc.frequency.exponentialRampToValueAtTime(100, time + 0.05);
-      gainNode.gain.setValueAtTime(1, time);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
-      osc.start(time);
-      osc.stop(time + 0.05);
-      break;
-    case 'soft':
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(400, time);
-      osc.frequency.exponentialRampToValueAtTime(200, time + 0.1);
-      gainNode.gain.setValueAtTime(0.5, time);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
-      osc.start(time);
-      osc.stop(time + 0.1);
-      break;
-    case 'loud':
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(1000, time);
-      osc.frequency.exponentialRampToValueAtTime(50, time + 0.1);
-      gainNode.gain.setValueAtTime(1, time);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
-      osc.start(time);
-      osc.stop(time + 0.1);
-      break;
-  }
+  source.start(0);
 }
+

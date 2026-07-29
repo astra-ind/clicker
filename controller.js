@@ -1,9 +1,10 @@
 // controller.js
-import { registerServiceWorker } from './app.js';
+import { registerServiceWorker, setupInstallButton } from './app.js';
 import { createMqttClient } from './mqtt-client.js';
 import { STATUS_TOPIC, TRIGGER_TOPIC } from './config.js';
 
 registerServiceWorker();
+setupInstallButton('installAppBtn');
 
 const clickBtn = document.getElementById('clickBtn');
 const statusIndicator = document.getElementById('statusIndicator');
@@ -34,6 +35,9 @@ client.on('message', (topic, message) => {
 
 function updateStatus(isReceiverOnline, isBrokerConnected) {
   statusIndicator.className = 'status-indicator';
+  statusIndicator.style.color = '';
+  statusIndicator.querySelector('.status-dot').style.backgroundColor = '';
+
   if (!isBrokerConnected) {
     statusIndicator.classList.add('status-offline');
     statusText.textContent = 'Disconnected';
@@ -67,11 +71,3 @@ clickBtn.addEventListener('click', () => {
     }
   }
 });
-
-// Remove inline warning style if class is updated later
-const originalUpdateStatus = updateStatus;
-updateStatus = function(isReceiverOnline, isBrokerConnected) {
-  statusIndicator.style.color = '';
-  statusIndicator.querySelector('.status-dot').style.backgroundColor = '';
-  originalUpdateStatus(isReceiverOnline, isBrokerConnected);
-}

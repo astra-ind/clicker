@@ -1,0 +1,12 @@
+{
+  "name": "pet-clicker-mvp",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "serve . -l 3000 --no-port-switching",
+    "build": "mkdir -p dist && cp *.html *.css *.js *.json dist/ && cp -r assets dist/"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

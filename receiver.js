@@ -1,15 +1,16 @@
 // receiver.js
-import { registerServiceWorker } from './app.js';
+import { registerServiceWorker, setupInstallButton } from './app.js';
 import { createMqttClient } from './mqtt-client.js';
 import { STATUS_TOPIC, TRIGGER_TOPIC } from './config.js';
-import { getAudioContext, playClick } from './audio.js';
+import { getAudioContext, playClick, preloadSounds } from './audio.js';
 import { Store } from './store.js';
 
 registerServiceWorker();
+setupInstallButton('installAppBtn');
 
 // State
 let outputMode = Store.get('outputMode', 'both');
-let soundType = Store.get('soundType', 'mechanical');
+let soundType = Store.get('soundType', 'classic');
 let volume = Store.get('volume', 1);
 let keepAwake = Store.get('keepAwake', false);
 let lastClickTime = Store.get('lastClickTime', null);
@@ -23,7 +24,7 @@ const volumeValue = document.getElementById('volumeValue');
 const keepAwakeToggle = document.getElementById('keepAwakeToggle');
 const testBtn = document.getElementById('testBtn');
 const outputModeButtons = document.querySelectorAll('#outputModeGroup button');
-const soundProfileButtons = document.querySelectorAll('#soundProfileGroup button');
+const soundProfileButtons = document.querySelectorAll('.sound-option-card');
 const soundProfileContainer = document.getElementById('soundProfileContainer');
 const volumeContainer = document.getElementById('volumeContainer');
 
@@ -59,6 +60,9 @@ function updateUI() {
 }
 updateUI();
 
+// Preload audio files
+preloadSounds();
+
 // Event Listeners for UI
 outputModeButtons.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -73,6 +77,8 @@ soundProfileButtons.forEach(btn => {
     soundType = btn.dataset.sound;
     Store.set('soundType', soundType);
     updateUI();
+    getAudioContext();
+    playClick(soundType, volume);
   });
 });
 
