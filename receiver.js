@@ -2,7 +2,7 @@
 import { registerServiceWorker, setupInstallButton } from './app.js';
 import { createMqttClient } from './mqtt-client.js';
 import { STATUS_TOPIC, TRIGGER_TOPIC } from './config.js';
-import { getAudioContext, playClick, preloadSounds } from './audio.js';
+import { getAudioContext, playClick, preloadSounds, initAudio } from './audio.js';
 import { Store } from './store.js';
 
 registerServiceWorker();
@@ -73,11 +73,11 @@ outputModeButtons.forEach(btn => {
 });
 
 soundProfileButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', async () => {
     soundType = btn.dataset.sound;
     Store.set('soundType', soundType);
     updateUI();
-    getAudioContext();
+    await initAudio();
     playClick(soundType, volume);
   });
 });
@@ -109,15 +109,34 @@ function triggerAction() {
   }
 }
 
-testBtn.addEventListener('click', () => {
-  getAudioContext(); // Ensure audio context is started
+testBtn.addEventListener('click', async () => {
+  await initAudio(); // Ensure audio context is started
   triggerAction();
 });
 
-// Click anywhere to ensure audio context
-document.body.addEventListener('click', () => {
-  getAudioContext();
-}, { once: true });
+// Audio unlocking banner and background events
+const audioUnlockBanner = document.getElementById('audioUnlockBanner');
+
+async function unlockAudio() {
+  await initAudio();
+  if (audioUnlockBanner) {
+    audioUnlockBanner.style.display = 'none';
+  }
+}
+
+if (audioUnlockBanner) {
+  audioUnlockBanner.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    await unlockAudio();
+  });
+}
+
+const unlockEvents = ['click', 'touchstart', 'touchend', 'mousedown'];
+const autoUnlockHandler = async () => {
+  await unlockAudio();
+  unlockEvents.forEach(evt => document.body.removeEventListener(evt, autoUnlockHandler, { capture: true }));
+};
+unlockEvents.forEach(evt => document.body.addEventListener(evt, autoUnlockHandler, { once: true, capture: true }));
 
 // Wake Lock
 let wakeLock = null;
@@ -146,7 +165,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     if (keepAwake) handleWakeLock();
     // Resume audio immediately when the page becomes active again
-    getAudioContext();
+    initAudio();
     
     // Restore the MQTT connection automatically after browser sleep
     if (client && !client.connected) {
