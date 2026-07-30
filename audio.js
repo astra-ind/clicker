@@ -34,8 +34,24 @@ export async function preloadSounds() {
   await Promise.all(ClickSoundTypes.map(loadSound));
 }
 
-export function playClick(type, volume = 1) {
+export async function playClick(type, volume = 1) {
   const ctx = getAudioContext();
+  
+  if (ctx.state === 'suspended') {
+    try {
+      await ctx.resume();
+    } catch (e) {
+      console.warn('Failed to resume AudioContext dynamically:', e);
+    }
+  }
+  
+  // If the browser still blocks the audio context from running, we discard
+  // the click playback to prevent queuing up multiple sounds that blast all at once.
+  if (ctx.state === 'suspended') {
+    console.warn(`AudioContext is suspended; discarding playback of ${type} click to avoid audio queue pile-up.`);
+    return;
+  }
+
   const buffer = audioBuffers[type];
   
   if (!buffer) {

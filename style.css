@@ -115,6 +115,11 @@ button {
 
 .btn:hover { background-color: var(--border-color); border-color: #3f3f46; }
 .btn:active { background-color: #3f3f46; transform: translateY(1px); }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 
 .btn-primary {
   background-color: var(--primary-color);

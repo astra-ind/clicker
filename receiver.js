@@ -1,7 +1,7 @@
 // receiver.js
 import { registerServiceWorker, setupInstallButton } from './app.js';
 import { createMqttClient } from './mqtt-client.js';
-import { STATUS_TOPIC, TRIGGER_TOPIC } from './config.js';
+import { getStatusTopic, getTriggerTopic } from './config.js';
 import { getAudioContext, playClick, preloadSounds } from './audio.js';
 import { Store } from './store.js';
 
@@ -27,6 +27,7 @@ const outputModeButtons = document.querySelectorAll('#outputModeGroup button');
 const soundProfileButtons = document.querySelectorAll('#soundProfileGroup button');
 const soundProfileContainer = document.getElementById('soundProfileContainer');
 const volumeContainer = document.getElementById('volumeContainer');
+const pairingCodeInput = document.getElementById('pairingCodeInput');
 
 // Initialize UI from state
 function updateUI() {
@@ -92,9 +93,54 @@ keepAwakeToggle.addEventListener('change', (e) => {
   handleWakeLock();
 });
 
-// Trigger Action
+// Initialize pairing code input from Store
+let pairingCode = Store.get('pairingCode', '0987');
+pairingCodeInput.value = pairingCode;
+
+// Real-time channel switching when pairing code changes
+let inputTimeout;
+pairingCodeInput.addEventListener('input', (e) => {
+  const newCode = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  pairingCodeInput.value = newCode;
+  
+  clearTimeout(inputTimeout);
+  inputTimeout = setTimeout(() => {
+    if (newCode.trim().length > 0) {
+      const oldStatusTopic = getStatusTopic();
+      const oldTriggerTopic = getTriggerTopic();
+      const newCodeSanitized = newCode.trim().toUpperCase();
+      
+      if (client && client.connected) {
+        // Publish offline on the old channel before switching
+        client.publish(oldStatusTopic, 'offline', { retain: true });
+        client.unsubscribe(oldTriggerTopic);
+      }
+      
+      // Save new code
+      Store.set('pairingCode', newCodeSanitized);
+      
+      if (client && client.connected) {
+        // Subscribe to new channel and publish online
+        client.subscribe(getTriggerTopic());
+        client.publish(getStatusTopic(), 'online', { retain: true });
+      }
+    }
+  }, 400);
+});
+
+// Trigger Action (throttled to prevent erratic double clicks)
+let lastTriggerTime = 0;
+const THROTTLE_MS = 250;
+
 function triggerAction() {
-  lastClickTime = Date.now();
+  const now = Date.now();
+  if (now - lastTriggerTime < THROTTLE_MS) {
+    console.log('Trigger throttled to prevent erratic double playback');
+    return;
+  }
+  lastTriggerTime = now;
+
+  lastClickTime = now;
   Store.set('lastClickTime', lastClickTime);
   updateUI();
   
@@ -105,6 +151,43 @@ function triggerAction() {
   if ((outputMode === 'vibration' || outputMode === 'both') && navigator.vibrate) {
     navigator.vibrate(200);
   }
+}
+
+function triggerDoubleAction() {
+  const now = Date.now();
+  if (now - lastTriggerTime < THROTTLE_MS) {
+    console.log('Double trigger throttled');
+    return;
+  }
+  lastTriggerTime = now + 200; // Extend throttle slightly to cover the duration of the double click
+
+  // First click
+  lastClickTime = now;
+  Store.set('lastClickTime', lastClickTime);
+  updateUI();
+  
+  if (outputMode === 'click' || outputMode === 'both') {
+    playClick(soundType, volume);
+  }
+  
+  if ((outputMode === 'vibration' || outputMode === 'both') && navigator.vibrate) {
+    navigator.vibrate(80);
+  }
+
+  // Second click after 180ms
+  setTimeout(() => {
+    lastClickTime = Date.now();
+    Store.set('lastClickTime', lastClickTime);
+    updateUI();
+    
+    if (outputMode === 'click' || outputMode === 'both') {
+      playClick(soundType, volume);
+    }
+    
+    if ((outputMode === 'vibration' || outputMode === 'both') && navigator.vibrate) {
+      navigator.vibrate(80);
+    }
+  }, 180);
 }
 
 testBtn.addEventListener('click', () => {
@@ -160,8 +243,8 @@ client.on('connect', () => {
   statusIndicator.className = 'status-indicator status-online';
   statusText.textContent = 'Online';
   
-  client.subscribe(TRIGGER_TOPIC);
-  client.publish(STATUS_TOPIC, 'online', { retain: true });
+  client.subscribe(getTriggerTopic());
+  client.publish(getStatusTopic(), 'online', { retain: true });
 });
 
 client.on('disconnect', () => {
@@ -175,14 +258,19 @@ client.on('offline', () => {
 });
 
 client.on('message', (topic, message) => {
-  if (topic === TRIGGER_TOPIC) {
-    triggerAction();
+  if (topic === getTriggerTopic()) {
+    const payload = message.toString();
+    if (payload === 'double') {
+      triggerDoubleAction();
+    } else {
+      triggerAction();
+    }
   }
 });
 
 window.addEventListener('beforeunload', () => {
   if (client.connected) {
-    client.publish(STATUS_TOPIC, 'offline', { retain: true });
+    client.publish(getStatusTopic(), 'offline', { retain: true });
     client.end(true);
   }
 });

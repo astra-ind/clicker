@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'pet-clicker-v2';
+const CACHE_NAME = 'pet-clicker-v3';
 const ASSETS = [
   './',
   './index.html',

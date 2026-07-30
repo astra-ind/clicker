@@ -20,12 +20,28 @@
       </div>
     </div>
 
+    <div class="card" style="padding: var(--spacing-md); margin-bottom: var(--spacing-md);">
+      <div class="flex justify-between items-center" style="gap: 1rem;">
+        <div>
+          <div class="font-bold">Connection Code</div>
+          <div class="text-sm text-secondary">Pair with receiver using same code</div>
+        </div>
+        <input type="text" id="pairingCodeInput" maxlength="6" style="width: 6rem; text-align: center; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: var(--border-radius-md); padding: 0.5rem; font-family: monospace; font-weight: bold; font-size: 1.125rem; text-transform: uppercase; outline: none;" placeholder="0987">
+      </div>
+    </div>
+
     <div class="big-button-container">
       <button id="clickBtn" class="big-btn" disabled>
         CLICK
       </button>
+
+      <button id="doubleClickBtn" class="btn mt-4 flex items-center justify-center gap-2" style="font-weight: 600; padding: 0.75rem 1.5rem; border-radius: var(--border-radius-full); max-width: 16rem;" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;"><rect width="14" height="14" x="5" y="5" rx="2" ry="2"/><path d="M9 9h6v6H9z"/></svg>
+        DOUBLE CLICK
+      </button>
+
       <p class="mt-8 text-secondary text-sm text-center" style="max-width: 200px;">
-        Tap the button to instantly trigger the receiver device.
+        Tap the large button for a single click, or the small button for a double click.
       </p>
 
       <button id="installAppBtn" class="btn btn-primary mt-8" style="display: none; max-width: 250px;">
