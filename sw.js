@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'pet-clicker-v3';
+const CACHE_NAME = 'pet-clicker-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -14,9 +14,6 @@ const ASSETS = [
   './store.js',
   './mqtt-client.js',
   './manifest.json',
-  './assets/classic.wav',
-  './assets/bell.wav',
-  './assets/whistle.wav',
   './assets/mechanical.wav',
   './assets/soft.wav',
   './assets/loud.wav',

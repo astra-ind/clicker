@@ -2,7 +2,7 @@
 import { registerServiceWorker, setupInstallButton } from './app.js';
 import { createMqttClient } from './mqtt-client.js';
 import { STATUS_TOPIC, TRIGGER_TOPIC } from './config.js';
-import { getAudioContext, playClick, preloadSounds, initAudio } from './audio.js';
+import { getAudioContext, playClick, preloadSounds } from './audio.js';
 import { Store } from './store.js';
 
 registerServiceWorker();
@@ -10,7 +10,7 @@ setupInstallButton('installAppBtn');
 
 // State
 let outputMode = Store.get('outputMode', 'both');
-let soundType = Store.get('soundType', 'classic');
+let soundType = Store.get('soundType', 'mechanical');
 let volume = Store.get('volume', 1);
 let keepAwake = Store.get('keepAwake', false);
 let lastClickTime = Store.get('lastClickTime', null);
@@ -24,7 +24,7 @@ const volumeValue = document.getElementById('volumeValue');
 const keepAwakeToggle = document.getElementById('keepAwakeToggle');
 const testBtn = document.getElementById('testBtn');
 const outputModeButtons = document.querySelectorAll('#outputModeGroup button');
-const soundProfileButtons = document.querySelectorAll('.sound-option-card');
+const soundProfileButtons = document.querySelectorAll('#soundProfileGroup button');
 const soundProfileContainer = document.getElementById('soundProfileContainer');
 const volumeContainer = document.getElementById('volumeContainer');
 
@@ -73,12 +73,10 @@ outputModeButtons.forEach(btn => {
 });
 
 soundProfileButtons.forEach(btn => {
-  btn.addEventListener('click', async () => {
+  btn.addEventListener('click', () => {
     soundType = btn.dataset.sound;
     Store.set('soundType', soundType);
     updateUI();
-    await initAudio();
-    playClick(soundType, volume);
   });
 });
 
@@ -109,34 +107,15 @@ function triggerAction() {
   }
 }
 
-testBtn.addEventListener('click', async () => {
-  await initAudio(); // Ensure audio context is started
+testBtn.addEventListener('click', () => {
+  getAudioContext(); // Ensure audio context is started
   triggerAction();
 });
 
-// Audio unlocking banner and background events
-const audioUnlockBanner = document.getElementById('audioUnlockBanner');
-
-async function unlockAudio() {
-  await initAudio();
-  if (audioUnlockBanner) {
-    audioUnlockBanner.style.display = 'none';
-  }
-}
-
-if (audioUnlockBanner) {
-  audioUnlockBanner.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    await unlockAudio();
-  });
-}
-
-const unlockEvents = ['click', 'touchstart', 'touchend', 'mousedown'];
-const autoUnlockHandler = async () => {
-  await unlockAudio();
-  unlockEvents.forEach(evt => document.body.removeEventListener(evt, autoUnlockHandler, { capture: true }));
-};
-unlockEvents.forEach(evt => document.body.addEventListener(evt, autoUnlockHandler, { once: true, capture: true }));
+// Click anywhere to ensure audio context
+document.body.addEventListener('click', () => {
+  getAudioContext();
+}, { once: true });
 
 // Wake Lock
 let wakeLock = null;
@@ -165,7 +144,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
     if (keepAwake) handleWakeLock();
     // Resume audio immediately when the page becomes active again
-    initAudio();
+    getAudioContext();
     
     // Restore the MQTT connection automatically after browser sleep
     if (client && !client.connected) {
