@@ -9,6 +9,7 @@ setupInstallButton('installAppBtn');
 
 const clickBtn = document.getElementById('clickBtn');
 const doubleClickBtn = document.getElementById('doubleClickBtn');
+const longVibeBtn = document.getElementById('longVibeBtn');
 const statusIndicator = document.getElementById('statusIndicator');
 const statusText = document.getElementById('statusText');
 const pairingCodeInput = document.getElementById('pairingCodeInput');
@@ -79,11 +80,13 @@ function updateStatus(isReceiverOnline, isBrokerConnected) {
     statusText.textContent = 'Disconnected';
     clickBtn.disabled = true;
     doubleClickBtn.disabled = true;
+    longVibeBtn.disabled = true;
   } else if (isReceiverOnline) {
     statusIndicator.classList.add('status-online');
     statusText.textContent = 'Receiver Online';
     clickBtn.disabled = false;
     doubleClickBtn.disabled = false;
+    longVibeBtn.disabled = false;
   } else {
     // We use a warning color for connected to broker but receiver offline
     statusIndicator.style.color = 'var(--warning-color)';
@@ -91,6 +94,7 @@ function updateStatus(isReceiverOnline, isBrokerConnected) {
     statusText.textContent = 'Receiver Offline';
     clickBtn.disabled = true;
     doubleClickBtn.disabled = true;
+    longVibeBtn.disabled = true;
   }
 }
 
@@ -117,6 +121,16 @@ doubleClickBtn.addEventListener('click', () => {
     if (navigator.vibrate) {
       // Shorter quick double-vibration
       navigator.vibrate([40, 40, 40]);
+    }
+  }
+});
+
+longVibeBtn.addEventListener('click', () => {
+  if (!longVibeBtn.disabled) {
+    client.publish(getTriggerTopic(), 'longvibe');
+    if (navigator.vibrate) {
+      // Strong local long vibration on the controller itself
+      navigator.vibrate(600);
     }
   }
 });

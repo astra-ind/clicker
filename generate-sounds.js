@@ -37,30 +37,47 @@ function writeWav(filename, generateSample, durationSec, sampleRate = 44100) {
 
 // Mechanical: short, sharp click with a "double" sound common in clickers
 writeWav('mechanical.wav', (t) => {
-  if (t > 0.05) return 0;
-  const env1 = Math.max(0, 1 - t * 100);
-  const env2 = Math.max(0, 1 - Math.abs(t - 0.02) * 150);
-  const noise = Math.random() * 2 - 1;
-  const tone = Math.sin(t * Math.PI * 2 * 3000) * 0.5;
-  return (noise + tone) * (env1 * 0.7 + env2 * 0.8) * 0.5;
-}, 0.06);
+  if (t > 0.12) return 0;
+  // First click (the press)
+  const env1 = Math.max(0, Math.exp(-t * 220));
+  const noise1 = Math.random() * 2 - 1;
+  const tone1 = Math.sin(t * Math.PI * 2 * 3500) * 0.4;
+  const click1 = (noise1 * 0.6 + tone1) * env1;
+  
+  // Second click (the release)
+  let click2 = 0;
+  if (t > 0.045) {
+    const t2 = t - 0.045;
+    const env2 = Math.max(0, Math.exp(-t2 * 180));
+    const noise2 = Math.random() * 2 - 1;
+    const tone2 = Math.sin(t2 * Math.PI * 2 * 2800) * 0.4;
+    click2 = (noise2 * 0.5 + tone2) * env2 * 0.75;
+  }
+  
+  // Mix and normalize
+  return (click1 + click2) * 0.95;
+}, 0.12);
 
-// Soft: gentle pop
+// Soft: gentle pop (smooth transition, pleasant frequency sweep)
 writeWav('soft.wav', (t) => {
-  if (t > 0.05) return 0;
-  const env = Math.max(0, Math.pow(1 - t * 20, 2));
-  const tone = Math.sin(t * Math.PI * 2 * (800 - t * 10000));
-  return tone * env * 0.8;
-}, 0.06);
+  if (t > 0.10) return 0;
+  const env = Math.max(0, Math.pow(1 - t * 15, 3));
+  // Smooth frequency sweep from 1000Hz down to 150Hz
+  const freq = 1000 - t * 8500;
+  const tone = Math.sin(t * Math.PI * 2 * freq);
+  return tone * env * 0.9;
+}, 0.10);
 
-// Loud: sharp, metallic snap
+// Loud: sharp, high-intensity metallic snap
 writeWav('loud.wav', (t) => {
-  if (t > 0.06) return 0;
-  const env = Math.exp(-t * 80);
-  const noise = (Math.random() * 2 - 1) * 0.6;
-  const tone1 = Math.sin(t * Math.PI * 2 * 2500) * 0.5;
-  const tone2 = Math.sin(t * Math.PI * 2 * 4500) * 0.3;
-  return (noise + tone1 + tone2) * env;
-}, 0.08);
+  if (t > 0.15) return 0;
+  const env = Math.exp(-t * 110);
+  const noise = (Math.random() * 2 - 1) * 0.7;
+  // Sharp mixed metal tones
+  const tone1 = Math.sin(t * Math.PI * 2 * 4000) * 0.5;
+  const tone2 = Math.sin(t * Math.PI * 2 * 5500) * 0.3;
+  const tone3 = Math.sin(t * Math.PI * 2 * 1800) * 0.2;
+  return (noise + tone1 + tone2 + tone3) * env * 1.2;
+}, 0.15);
 
 console.log("Wav files generated.");

@@ -190,6 +190,27 @@ function triggerDoubleAction() {
   }, 180);
 }
 
+function triggerLongVibrationAction() {
+  const now = Date.now();
+  if (now - lastTriggerTime < THROTTLE_MS) {
+    console.log('Long vibration trigger throttled');
+    return;
+  }
+  lastTriggerTime = now;
+
+  lastClickTime = now;
+  Store.set('lastClickTime', lastClickTime);
+  updateUI();
+  
+  if (outputMode === 'click' || outputMode === 'both') {
+    playClick('loud', volume);
+  }
+  
+  if (navigator.vibrate) {
+    navigator.vibrate(800);
+  }
+}
+
 testBtn.addEventListener('click', () => {
   getAudioContext(); // Ensure audio context is started
   triggerAction();
@@ -262,6 +283,8 @@ client.on('message', (topic, message) => {
     const payload = message.toString();
     if (payload === 'double') {
       triggerDoubleAction();
+    } else if (payload === 'longvibe') {
+      triggerLongVibrationAction();
     } else {
       triggerAction();
     }
